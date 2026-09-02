@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CareFlow AI</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:#eef6f8;
+    color:#222;
+}
+
+header{
+    background:#087f8c;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+header h1{
+    font-size:32px;
+}
+
+header p{
+    margin-top:6px;
+}
+
+.language{
+    margin-top:12px;
+}
+
+.language select{
+    width:auto;
+    padding:8px;
+}
+
+nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    justify-content:center;
+    background:white;
+    padding:10px;
+    box-shadow:0 2px 8px #bbb;
+}
+
+nav button{
+    background:#087f8c;
+    color:white;
+    border:0;
+    padding:10px 13px;
+    border-radius:7px;
+    cursor:pointer;
+}
+
+nav button:hover{
+    background:#055b64;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.page{
+    display:none;
+}
+
+.page.active{
+    display:block;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:14px;
+    box-shadow:0 3px 10px #d2d2d2;
+}
+
+.card h2{
+    color:#087f8c;
+    margin-bottom:15px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:15px;
+}
+
+.stat{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    text-align:center;
+    box-shadow:0 3px 8px #ddd;
+}
+
+.stat h3{
+    font-size:32px;
+    color:#087f8c;
+}
+
+input,select,textarea{
+    width:100%;
+    padding:11px;
+    margin:7px 0;
+    border:1px solid #ccc;
+    border-radius:7px;
+    font-size:15px;
+}
+
+textarea{
+    min-height:100px;
+}
+
+button{
+    cursor:pointer;
+}
+
+.primary{
+    background:#087f8c;
+    color:white;
+    border:0;
+    padding:11px 18px;
+    border-radius:7px;
+    margin-top:7px;
+}
+
+.success{
+    background:#198754;
+    color:white;
+    border:0;
+    padding:11px 18px;
+    border-radius:7px;
+    margin-top:7px;
+}
+
+.danger{
+    background:#d62828;
+    color:white;
+    border:0;
+    padding:11px 18px;
+    border-radius:7px;
+    margin-top:7px;
+}
+
+.mic{
+    background:#d62828;
+    color:white;
+    border:0;
+    padding:11px 15px;
+    border-radius:7px;
+    margin-top:7px;
+    font-size:16px;
+}
+
+.mic:hover{
+    background:#a91f1f;
+}
+
+.voice-row{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+
+.voice-row input,
+.voice-row textarea{
+    flex:1;
+}
+
+.voice-row .mic{
+    width:auto;
+    white-space:nowrap;
+}
+
+.voice-status{
+    color:#087f8c;
+    font-size:13px;
+    margin-top:4px;
+}
+
+.result{
+    background:#edfafa;
+    border-left:5px solid #087f8c;
+    padding:15px;
+    margin-top:15px;
+    border-radius:7px;
+}
+
+.alert{
+    background:#fff3cd;
+    padding:15px;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+.emergency{
+    background:#ffe5e5;
+    border:2px solid #d62828;
+}
+
+.route{
+    background:#f5f5f5;
+    padding:15px;
+    border-radius:8px;
+    margin-top:10px;
+}
+
+.route span{
+    display:block;
+    padding:8px;
+    margin:5px;
+    background:white;
+    border-radius:6px;
+}
+
+footer{
+    background:#087f8c;
+    color:white;
+    text-align:center;
+    padding:20px;
+    margin-top:30px;
+}
+
+.small{
+    font-size:13px;
+    color:#666;
+}
+
+hr{
+    margin:18px 0;
+    border:0;
+    border-top:1px solid #ddd;
+}
+
+@media(max-width:600px){
+
+    header h1{
+        font-size:26px;
+    }
+
+    nav button{
+        padding:8px 10px;
+        font-size:13px;
+    }
+
+    .voice-row{
+        align-items:flex-start;
+    }
+
+    .voice-row .mic{
+        padding:10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>🏥 CareFlow AI</h1>
+
+<p id="subtitle">
+Multilingual Smart Healthcare & Emergency Platform
+</p>
+
+<div class="language">
+
+<select id="language" onchange="changeLanguage()">
+
+<option value="en">English</option>
+<option value="te">తెలుగు</option>
+<option value="hi">हिंदी</option>
+
+</select>
+
+</div>
+
+</header>
+
+
+<nav>
+
+<button onclick="showPage('home')">🏠 Home</button>
+<button onclick="showPage('health')">🤖 AI Health</button>
+<button onclick="showPage('doctor')">👨‍⚕️ Doctor</button>
+<button onclick="showPage('appointment')">📅 Appointment</button>
+<button onclick="showPage('queue')">🎟️ Queue</button>
+<button onclick="showPage('beds')">🛏️ Beds</button>
+<button onclick="showPage('blood')">🩸 Blood</button>
+<button onclick="showPage('pharmacy')">💊 Pharmacy</button>
+<button onclick="showPage('reminder')">⏰ Reminder</button>
+<button onclick="showPage('family')">👨‍👩‍👧 Family</button>
+<button onclick="showPage('emergency')">🚨 Emergency</button>
+
+</nav>
+
+
+<div class="container">
+
+
+<!-- HOME -->
+
+<section id="home" class="page active">
+
+<div class="card">
+
+<h2 id="welcomeTitle">
+Welcome to CareFlow AI
+</h2>
+
+<p>
+One platform connecting patients, doctors,
+hospital queues, beds, blood, pharmacies,
+reminders and emergency support.
+</p>
+
+<br>
+
+<button class="primary" onclick="getLocation()">
+📍 Detect My Location
+</button>
+
+<div id="locationResult"></div>
+
+</div>
+
+
+<div class="grid">
+
+<div class="stat">
+<h3>8</h3>
+<p>Doctors Available</p>
+</div>
+
+<div class="stat">
+<h3>26</h3>
+<p>Beds Available</p>
+</div>
+
+<div class="stat">
+<h3>35</h3>
+<p>Blood Units</p>
+</div>
+
+<div class="stat">
+<h3>14</h3>
+<p>Patients in Queue</p>
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- AI HEALTH -->
+
+<section id="health" class="page">
+
+<div class="card">
+
+<h2>🤖 AI Health Request</h2>
+
+<p>
+Enter your health concern by typing or speaking.
+</p>
+
+<div class="voice-row">
+
+<textarea
+id="healthIssue"
+placeholder="Example: I have fever and headache..."
+></textarea>
+
+<button class="mic"
+onclick="startVoice('healthIssue','healthVoiceStatus')">
+🎤
+</button>
+
+</div>
+
+<div id="healthVoiceStatus" class="voice-status"></div>
+
+<button class="primary" onclick="analyzeHealth()">
+🤖 Analyze Request
+</button>
+
+<div id="healthResult"></div>
+
+</div>
+
+</section>
+
+
+
+<!-- DOCTOR -->
+
+<section id="doctor" class="page">
+
+<div class="card">
+
+<h2>👨‍⚕️ Nearby Doctors</h2>
+
+<div class="result">
+
+<h3>Dr. Ravi Kumar</h3>
+<p>General Medicine</p>
+<p>🏥 CareFlow Hospital</p>
+<p>🚪 Room: 204</p>
+<p>Floor: 2</p>
+<p>📍 Distance: 2.8 km</p>
+<p>🟢 Available</p>
+
+<button class="primary"
+onclick="showPage('appointment')">
+Book Doctor
+</button>
+
+</div>
+
+
+<div class="result">
+
+<h3>Dr. Priya Sharma</h3>
+<p>Cardiology</p>
+<p>🏥 CareFlow Hospital</p>
+<p>🚪 Room: 305</p>
+<p>Floor: 3</p>
+<p>📍 Distance: 4.1 km</p>
+<p>🟢 Available</p>
+
+<button class="primary"
+onclick="showPage('appointment')">
+Book Doctor
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- APPOINTMENT -->
+
+<section id="appointment" class="page">
+
+<div class="card">
+
+<h2>📅 Doctor Appointment</h2>
+
+<label>Patient Name</label>
+
+<div class="voice-row">
+
+<input
+id="patientName"
+placeholder="Enter patient name"
+>
+
+<button class="mic"
+onclick="startVoice('patientName','patientVoiceStatus')">
+🎤
+</button>
+
+</div>
+
+<div id="patientVoiceStatus" class="voice-status"></div>
+
+
+<label>Select Doctor</label>
+
+<select id="doctorSelect">
+
+<option>Dr. Ravi Kumar - General Medicine</option>
+<option>Dr. Priya Sharma - Cardiology</option>
+
+</select>
+
+
+<label>Appointment Date</label>
+
+<input
+type="date"
+id="appointmentDate"
+>
+
+<button class="primary"
+onclick="bookAppointment()">
+
+Book Appointment
+
+</button>
+
+<div id="appointmentResult"></div>
+
+</div>
+
+</section>
+
+
+
+<!-- QUEUE -->
+
+<section id="queue" class="page">
+
+<div class="card">
+
+<h2>🎟️ Hospital Queue</h2>
+
+<div class="grid">
+
+<div class="stat">
+
+<h3 id="currentToken">
+12
+</h3>
+
+<p>Current Token</p>
+
+</div>
+
+<div class="stat">
+
+<h3 id="myToken">
+-
+</h3>
+
+<p>Your Token</p>
+
+</div>
+
+<div class="stat">
+
+<h3 id="waitingTime">
+-
+</h3>
+
+<p>Estimated Minutes</p>
+
+</div>
+
+</div>
+
+<br>
+
+<button class="primary"
+onclick="refreshQueue">
+
+🔄 Refresh Queue
+</button>
+
+<div id="queueResult"></div>
+
+</div>
+
+</section>
+
+
+
+<!-- BEDS -->
+
+<section id="beds" class="page">
+
+<div class="card">
+
+<h2>🛏️ Bed Availability</h2>
+
+<div class="grid">
+
+<div class="stat">
+<h3>18</h3>
+<p>General Beds</p>
+</div>
+
+<div class="stat">
+<h3>5</h3>
+<p>ICU Beds</p>
+</div>
+
+<div class="stat">
+<h3>3</h3>
+<p>Emergency Beds</p>
+</div>
+
+</div>
+
+<div class="result">
+🟢 Beds are currently available.
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- BLOOD -->
+
+<section id="blood" class="page">
+
+<div class="card">
+
+<h2>🩸 Blood Availability</h2>
+
+<label>Select Blood Group</label>
+
+<select id="bloodGroup">
+
+<option>A+</option>
+<option>A-</option>
+<option>B+</option>
+<option>B-</option>
+<option>O+</option>
+<option>O-</option>
+<option>AB+</option>
+<option>AB-</option>
+
+</select>
+
+<button class="primary"
+onclick="checkBlood()">
+
+Check Availability
+
+</button>
+
+<div id="bloodResult"></div>
+
+</div>
+
+</section>
+
+
+
+<!-- PHARMACY -->
+
+<section id="pharmacy" class="page">
+
+<div class="card">
+
+<h2>💊 Pharmacy Medicine Availability</h2>
+
+<label>Search Medicine</label>
+
+<div class="voice-row">
+
+<input
+id="medicineSearch"
+placeholder="Example: Paracetamol"
+>
+
+<button class="mic"
+onclick="startVoice('medicineSearch','medicineVoiceStatus')">
+🎤
+</button>
+
+</div>
+
+<div id="medicineVoiceStatus" class="voice-status"></div>
+
+<button class="primary"
+onclick="searchMedicine()">
+
+🔎 Search Pharmacy
+
+</button>
+
+<div id="pharmacyResult"></div>
+
+<p class="small">
+
+Medicine availability shown here is demonstration data.
+Do not start, stop, or change medicines without advice
+from a qualified healthcare professional.
+
+</p>
+
+</div>
+
+</section>
+
+
+
+<!-- REMINDER -->
+
+<section id="reminder" class="page">
+
+<div class="card">
+
+<h2>⏰ Medicine Reminder</h2>
+
+<p>
+Create reminders only for medicines already prescribed
+by a qualified healthcare professional.
+</p>
+
+<div class="voice-row">
+
+<input
+id="medicineName"
+placeholder="Prescribed medicine name"
+>
+
+<button class="mic"
+onclick="startVoice('medicineName','reminderVoiceStatus')">
+🎤
+</button>
+
+</div>
+
+<div id="reminderVoiceStatus" class="voice-status"></div>
+
+<input
+type="time"
+id="medicineTime"
+>
+
+<button class="primary"
+onclick="addReminder()">
+
+➕ Add Reminder
+
+</button>
+
+<div id="reminderList"></div>
+
+</div>
+
+</section>
+
+
+
+<!-- FAMILY -->
+
+<section id="family" class="page">
+
+<div class="card">
+
+<h2>👨‍👩‍👧 Family Notification</h2>
+
+<label>Family Member Name</label>
+
+<div class="voice-row">
+
+<input
+id="familyName"
+placeholder="Enter name"
+>
+
+<button class="mic"
+onclick="startVoice('familyName','familyNameVoiceStatus')">
+🎤
+</button>
+
+</div>
+
+<div id="familyNameVoiceStatus" class="voice-status"></div>
+
+
+<label>Message</label>
+
+<div class="voice-row">
+
+<textarea
+id="familyMessage"
+placeholder="Enter notification"
+></textarea>
+
+<button class="mic"
+onclick="startVoice('familyMessage','familyVoiceStatus')">
+🎤
+</button>
+
+</div>
+
+<div id="familyVoiceStatus" class="voice-status"></div>
+
+
+<button class="primary"
+onclick="sendFamilyNotification()">
+
+🔔 Send Notification
+
+</button>
+
+<div id="familyResult"></div>
+
+</div>
+
+</section>
+
+
+
+<!-- EMERGENCY -->
+
+<section id="emergency" class="page">
+
+<div class="card emergency">
+
+<h2>🚨 Emergency Support</h2>
+
+<p>
+If you are experiencing a serious or life-threatening
+medical emergency, contact local emergency services
+and seek immediate help from a qualified professional.
+</p>
+
+<br>
+
+<button class="danger"
+onclick="startEmergency()">
+
+🚨 START EMERGENCY
+
+</button>
+
+<div id="emergencyResult"></div>
+
+</div>
+
+</section>
+
+
+</div>
+
+
+<footer>
+
+<p>
+CareFlow AI © 2026
+</p>
+
+<p>
+Smart Healthcare Hackathon Prototype
+</p>
+
+</footer>
+
+
+
+<script>
+
+/* =========================================
+LANGUAGE
+========================================= */
+
+const languageText = {
+
+en:{
+subtitle:
+"Multilingual Smart Healthcare & Emergency Platform",
+
+welcome:
+"Welcome to CareFlow AI"
+},
+
+te:{
+subtitle:
+"బహుభాషా స్మార్ట్ హెల్త్‌కేర్ & ఎమర్జెన్సీ ప్లాట్‌ఫామ్",
+
+welcome:
+"CareFlow AI కి స్వాగతం"
+},
+
+hi:{
+subtitle:
+"बहुभाषी स्मार्ट हेल्थकेयर और आपातकालीन प्लेटफॉर्म",
+
+welcome:
+"CareFlow AI में आपका स्वागत है"
+}
+
+};
+
+
+function changeLanguage(){
+
+let lang =
+document.getElementById("language").value;
+
+document.getElementById("subtitle").innerText =
+languageText[lang].subtitle;
+
+document.getElementById("welcomeTitle").innerText =
+languageText[lang].welcome;
+
+}
+
+
+
+/* =========================================
+VOICE RECOGNITION
+English + Telugu + Hindi
+========================================= */
+
+function startVoice(targetId,statusId){
+
+const SpeechRecognition =
+window.SpeechRecognition ||
+window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+
+alert(
+"Voice recognition is not supported. Please use Google Chrome."
+);
+
+return;
+
+}
+
+const recognition =
+new SpeechRecognition();
+
+let lang =
+document.getElementById("language").value;
+
+
+/* LANGUAGE SELECTION */
+
+if(lang === "te"){
+
+recognition.lang = "te-IN";
+
+}
+
+else if(lang === "hi"){
+
+recognition.lang = "hi-IN";
+
+}
+
+else{
+
+recognition.lang = "en-IN";
+
+}
+
+
+recognition.interimResults = false;
+
+recognition.continuous = false;
+
+
+document.getElementById(statusId).innerText =
+"🎤 Listening...";
+
+
+recognition.start();
+
+
+recognition.onresult =
+function(event){
+
+let text =
+event.results[0][0].transcript;
+
+document.getElementById(targetId).value =
+text;
+
+document.getElementById(statusId).innerText =
+"✅ Voice input added";
+
+};
+
+
+recognition.onerror =
+function(event){
+
+document.getElementById(statusId).innerText =
+"❌ Voice error: " + event.error;
+
+};
+
+
+recognition.onend =
+function(){
+
+};
+
+}
+
+
+
+/* =========================================
+PAGE NAVIGATION
+========================================= */
+
+function showPage(page){
+
+document
+.querySelectorAll(".page")
+.forEach(p =>
+p.classList.remove("active")
+);
+
+document
+.getElementById(page)
+.classList.add("active");
+
+}
+
+
+
+/* =========================================
+LOCATION
+========================================= */
+
+let patientLatitude = null;
+let patientLongitude = null;
+
+
+function getLocation(){
+
+if(!navigator.geolocation){
+
+alert(
+"Location is not supported by this browser."
+);
+
+return;
+
+}
+
+navigator.geolocation.getCurrentPosition(
+
+function(position){
+
+patientLatitude =
+position.coords.latitude;
+
+patientLongitude =
+position.coords.longitude;
+
+
+document.getElementById(
+"locationResult"
+).innerHTML = `
+
+<div class="result">
+
+📍 Location detected successfully.
+
+<br><br>
+
+Latitude:
+${patientLatitude.toFixed(5)}
+
+<br>
+
+Longitude:
+${patientLongitude.toFixed(5)}
+
+</div>
+
+`;
+
+},
+
+function(){
+
+alert(
+"Location permission was not granted."
+);
+
+}
+
+);
+
+}
+
+
+
+/* =========================================
+AI HEALTH
+========================================= */
+
+function analyzeHealth(){
+
+let issue =
+document.getElementById(
+"healthIssue"
+).value.trim();
+
+
+if(issue === ""){
+
+alert(
+"Please enter or speak your health issue."
+);
+
+return;
+
+}
+
+
+document.getElementById(
+"healthResult"
+).innerHTML = `
+
+<div class="result">
+
+<h3>🤖 AI Health Request</h3>
+
+<p>
+<strong>Your request:</strong>
+</p>
+
+<p>${issue}</p>
+
+<hr>
+
+<p>
+🏥 Suggested department:
+General Medicine
+</p>
+
+<p>
+👨‍⚕️ Nearby doctor:
+Dr. Ravi Kumar
+</p>
+
+<p>
+📍 Approximate distance:
+2.8 km
+</p>
+
+<button class="primary"
+onclick="showPage('appointment')">
+
+📅 Book Appointment
+
+</button>
+
+</div>
+
+`;
+
+}
+
+
+
+/* =========================================
+APPOINTMENT
+========================================= */
+
+function bookAppointment(){
+
+let name =
+document.getElementById(
+"patientName"
+).value.trim();
+
+let doctor =
+document.getElementById(
+"doctorSelect"
+).value;
+
+let date =
+document.getElementById(
+"appointmentDate"
+).value;
+
+
+if(name === "" || date === ""){
+
+alert(
+"Please enter patient name and appointment date."
+);
+
+return;
+
+}
+
+
+let token =
+Math.floor(Math.random()*40)+15;
+
+
+localStorage.setItem(
+"myToken",
+token
+);
+
+
+document.getElementById(
+"appointmentResult"
+).innerHTML = `
+
+<div class="result">
+
+<h3>✅ Appointment Confirmed</h3>
+
+<p>
+Patient: ${name}
+</p>
+
+<p>
+Doctor: ${doctor}
+</p>
+
+<p>
+Date: ${date}
+</p>
+
+<p>
+🎟️ Token:
+<strong>${token}</strong>
+</p>
+
+<p>
+⏱️ Estimated waiting:
+${token*5} minutes
+</p>
+
+<p>
+🚪 Doctor Room:
+204
+</p>
+
+</div>
+
+`;
+
+
+document.getElementById(
+"myToken"
+).innerText =
+token;
+
+}
+
+
+
+/* =========================================
+QUEUE
+========================================= */
+
+let currentTokenNumber = 12;
+
+
+function refreshQueue(){
+
+currentTokenNumber++;
+
+
+document.getElementById(
+"currentToken"
+).innerText =
+currentTokenNumber;
+
+
+let myToken =
+localStorage.getItem("myToken");
+
+
+if(!myToken){
+
+document.getElementById(
+"queueResult"
+).innerHTML = `
+
+<div class="alert">
+
+Please book an appointment first.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+myToken =
+parseInt(myToken);
+
+
+document.getElementById(
+"myToken"
+).innerText =
+myToken;
+
+
+let peopleAhead =
+Math.max(
+myToken-currentTokenNumber,
+0
+);
+
+
+let wait =
+peopleAhead*5;
+
+
+document.getElementById(
+"waitingTime"
+).innerText =
+wait;
+
+
+document.getElementById(
+"queueResult"
+).innerHTML = `
+
+<div class="result">
+
+🎟️ Your Token:
+<strong>${myToken}</strong>
+
+<br><br>
+
+👥 People ahead:
+<strong>${peopleAhead}</strong>
+
+<br><br>
+
+⏱️ Estimated waiting:
+<strong>${wait} minutes</strong>
+
+</div>
+
+`;
+
+}
+
+
+
+/* =========================================
+BLOOD
+========================================= */
+
+const bloodStock = {
+
+"A+":5,
+"A-":0,
+"B+":7,
+"B-":2,
+"O+":10,
+"O-":0,
+"AB+":3,
+"AB-":0
+
+};
+
+
+function checkBlood(){
+
+let group =
+document.getElementById(
+"bloodGroup"
+).value;
+
+
+let units =
+bloodStock[group];
+
+
+if(units > 0){
+
+document.getElementById(
+"bloodResult"
+).innerHTML = `
+
+<div class="result">
+
+<h3>🟢 Blood Available</h3>
+
+<p>
+${group}: ${units} units
+</p>
+
+</div>
+
+`;
+
+}
+
+else{
+
+document.getElementById(
+"bloodResult"
+).innerHTML = `
+
+<div class="alert">
+
+<h3>⚠️ Blood Not Available</h3>
+
+<p>
+${group} is currently unavailable
+in this demo inventory.
+</p>
+
+<br>
+
+<button class="primary"
+onclick="findDonor()">
+
+🔎 Search Donors
+
+</button>
+
+</div>
+
+`;
+
+}
+
+}
+
+
+
+/* =========================================
+DONOR SEARCH
+========================================= */
+
+function findDonor(){
+
+let group =
+document.getElementById(
+"bloodGroup"
+).value;
+
+
+document.getElementById(
+"bloodResult"
+).innerHTML += `
+
+<div class="result">
+
+<h3>🔎 Donor Search</h3>
+
+<p>
+Searching participating/verified donor
+records for blood group:
+<strong>${group}</strong>
+</p>
+
+<p>
+📍 Nearby donor coordination area:
+2–5 km
+</p>
+
+<p>
+🔔 Donor request created.
+</p>
+
+</div>
+
+`;
+
+}
+
+
+
+/* =========================================
+PHARMACY
+========================================= */
+
+const pharmacies = [
+
+{
+name:"Care Pharmacy",
+distance:"1.2 km",
+medicines:[
+"Paracetamol",
+"ORS",
+"Cetirizine"
+]
+},
+
+{
+name:"HealthPlus Pharmacy",
+distance:"2.5 km",
+medicines:[
+"Paracetamol",
+"Vitamin tablets",
+"ORS"
+]
+},
+
+{
+name:"MedCare Pharmacy",
+distance:"3.1 km",
+medicines:[
+"Cetirizine",
+"Paracetamol"
+]
+}
+
+];
+
+
+function searchMedicine(){
+
+let search =
+document.getElementById(
+"medicineSearch"
+).value
+.trim()
+.toLowerCase();
+
+
+if(search === ""){
+
+alert(
+"Enter a medicine name."
+);
+
+return;
+
+}
+
+
+let results =
+pharmacies.filter(pharmacy =>
+pharmacy.medicines.some(
+medicine =>
+medicine.toLowerCase()
+.includes(search)
+)
+);
+
+
+if(results.length === 0){
+
+document.getElementById(
+"pharmacyResult"
+).innerHTML = `
+
+<div class="alert">
+
+❌ Medicine not found in demo pharmacy stock.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+let html = "";
+
+
+results.forEach(pharmacy => {
+
+html += `
+
+<div class="result">
+
+<h3>💊 ${pharmacy.name}</h3>
+
+<p>
+📍 Distance:
+${pharmacy.distance}
+</p>
+
+<p>
+🟢 ${search} available
+</p>
+
+</div>
+
+`;
+
+});
+
+
+document.getElementById(
+"pharmacyResult"
+).innerHTML =
+html;
+
+}
+
+
+
+/* =========================================
+MEDICINE REMINDER
+========================================= */
+
+function addReminder(){
+
+let medicine =
+document.getElementById(
+"medicineName"
+).value.trim();
+
+
+let time =
+document.getElementById(
+"medicineTime"
+).value;
+
+
+if(medicine === "" || time === ""){
+
+alert(
+"Enter medicine name and reminder time."
+);
+
+return;
+
+}
+
+
+let reminders =
+JSON.parse(
+localStorage.getItem("reminders") || "[]"
+);
+
+
+reminders.push({
+
+medicine:medicine,
+time:time
+
+});
+
+
+localStorage.setItem(
+"reminders",
+JSON.stringify(reminders)
+);
+
+
+document.getElementById(
+"medicineName"
+).value = "";
+
+
+document.getElementById(
+"medicineTime"
+).value = "";
+
+
+displayReminders();
+
+}
+
+
+
+function displayReminders(){
+
+let reminders =
+JSON.parse(
+localStorage.getItem("reminders") || "[]"
+);
+
+
+let html = "";
+
+
+reminders.forEach((r,index)=>{
+
+html += `
+
+<div class="result">
+
+⏰ <strong>${r.time}</strong>
+
+<br>
+
+💊 ${r.medicine}
+
+<br>
+
+<button class="danger"
+onclick="deleteReminder(${index})">
+
+Delete
+
+</button>
+
+</div>
+
+`;
+
+});
+
+
+document.getElementById(
+"reminderList"
+).innerHTML =
+html;
+
+}
+
+
+
+function deleteReminder(index){
+
+let reminders =
+JSON.parse(
+localStorage.getItem("reminders") || "[]"
+);
+
+
+reminders.splice(index,1);
+
+
+localStorage.setItem(
+"reminders",
+JSON.stringify(reminders)
+);
+
+
+displayReminders();
+
+}
+
+
+
+/* =========================================
+FAMILY NOTIFICATION
+========================================= */
+
+function sendFamilyNotification(){
+
+let name =
+document.getElementById(
+"familyName"
+).value.trim();
+
+
+let message =
+document.getElementById(
+"familyMessage"
+).value.trim();
+
+
+if(name === "" || message === ""){
+
+alert(
+"Enter family member and message."
+);
+
+return;
+
+}
+
+
+document.getElementById(
+"familyResult"
+).innerHTML = `
+
+<div class="result">
+
+<h3>🔔 Notification Created</h3>
+
+<p>
+Family member:
+<strong>${name}</strong>
+</p>
+
+<p>
+Message:
+${message}
+</p>
+
+<p>
+✅ Notification is ready.
+</p>
+
+<p class="small">
+
+For real SMS/WhatsApp delivery,
+connect an authorized backend service.
+
+</p>
+
+</div>
+
+`;
+
+}
+
+
+
+/* =========================================
+EMERGENCY
+========================================= */
+
+function startEmergency(){
+
+getLocation();
+
+
+document.getElementById(
+"emergencyResult"
+).innerHTML = `
+
+<div class="result">
+
+<h3>🚨 Emergency Support Activated</h3>
+
+<p>
+📍 Getting patient location...
+</p>
+
+<p>
+🏥 Nearest participating hospital:
+CareFlow Emergency Hospital
+</p>
+
+<p>
+📏 Approximate distance:
+2.8 km
+</p>
+
+<p>
+🚪 Destination:
+Emergency Department
+</p>
+
+
+<div class="route">
+
+<h3>
+📍 Patient → Hospital Route
+</h3>
+
+<span>
+📍 Patient Current Location
+</span>
+
+<span>↓</span>
+
+<span>
+🛣️ Main Road
+</span>
+
+<span>↓</span>
+
+<span>
+🚦 Hospital Junction
+</span>
+
+<span>↓</span>
+
+<span>
+🏥 CareFlow Emergency Hospital
+</span>
+
+<span>↓</span>
+
+<span>
+🚨 Emergency Department
+</span>
+
+</div>
+
+
+<br>
+
+
+<button class="danger"
+onclick="openMap()">
+
+🗺️ Open Map
+
+</button>
+
+
+<button class="primary"
+onclick="alertFamilyEmergency()">
+
+🔔 Alert Family
+
+</button>
+
+
+<br><br>
+
+
+<p class="small">
+
+This prototype does not dispatch an ambulance.
+Real emergency dispatch requires an authorized
+emergency-service integration.
+
+</p>
+
+</div>
+
+`;
+
+}
+
+
+
+/* =========================================
+MAP
+========================================= */
+
+function openMap(){
+
+if(patientLatitude === null){
+
+alert(
+"Please allow location access first."
+);
+
+getLocation();
+
+return;
+
+}
+
+
+let hospitalLat = 16.3067;
+let hospitalLng = 80.4365;
+
+
+let url =
+"https://www.google.com/maps/dir/?api=1" +
+"&origin=" +
+patientLatitude +
+"," +
+patientLongitude +
+"&destination=" +
+hospitalLat +
+"," +
+hospitalLng;
+
+
+window.open(
+url,
+"_blank"
+);
+
+}
+
+
+
+/* =========================================
+EMERGENCY FAMILY ALERT
+========================================= */
+
+function alertFamilyEmergency(){
+
+document.getElementById(
+"emergencyResult"
+).innerHTML += `
+
+<div class="alert">
+
+🔔 Emergency notification prepared
+for the selected family contact.
+
+<br><br>
+
+📍 Patient location can be shared
+after permission is granted.
+
+</div>
+
+`;
+
+}
+
+
+
+/* =========================================
+REMINDER CHECK
+========================================= */
+
+function checkReminderTime(){
+
+let reminders =
+JSON.parse(
+localStorage.getItem("reminders") || "[]"
+);
+
+
+let now =
+new Date();
+
+
+let currentTime =
+now.toTimeString()
+.substring(0,5);
+
+
+reminders.forEach(r=>{
+
+if(r.time === currentTime){
+
+alert(
+"⏰ Medicine Reminder: " +
+r.medicine
+);
+
+}
+
+});
+
+}
+
+
+setInterval(
+checkReminderTime,
+60000
+);
+
+
+
+/* =========================================
+LOAD SAVED DATA
+========================================= */
+
+displayReminders();
+
+
+let savedToken =
+localStorage.getItem("myToken");
+
+
+if(savedToken){
+
+document.getElementById(
+"myToken"
+).innerText =
+savedToken;
+
+}
+
+</script>
+
+</body>
+</html>
+<button class="primary" onclick="refreshQueue()">
+    🔄 Refresh Queue
+</button>
